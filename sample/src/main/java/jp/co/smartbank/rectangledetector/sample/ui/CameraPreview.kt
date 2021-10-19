@@ -75,14 +75,14 @@ private fun bindCameraUseCases(
         return
     }
 
-    val previewRatio = width.toDouble() / height
+    val previewRatio = width.toFloat() / height
     val targetResolution = arrayListOf(
         Size(1080, 1920),
         Size(1080, 1440),
         Size(1080, 1080),
         Size(1440, 1080),
         Size(1920, 1080)
-    ).minByOrNull { abs(previewRatio - (it.width / it.height)) } ?: Size(1080, 1080)
+    ).minByOrNull { abs(previewRatio - (it.width.toFloat() / it.height)) } ?: Size(1080, 1080)
 
     val rotation = previewView.display.rotation
     imageCapture?.targetRotation = previewView.display.rotation
