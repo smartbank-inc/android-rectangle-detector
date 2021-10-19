@@ -15,11 +15,6 @@ class RectangleDetectionImageAnalyzer(
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(imageProxy: ImageProxy) {
         val bitmap = imageProxy.toBitmap()
-        if (bitmap == null) {
-            imageProxy.close()
-            return
-        }
-
         listener(detector.detectRectangles(bitmap))
         imageProxy.close()
     }
