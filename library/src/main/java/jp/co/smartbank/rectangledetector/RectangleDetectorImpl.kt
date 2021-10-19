@@ -5,7 +5,9 @@ import android.graphics.Point
 import android.util.Size
 import jp.co.smartbank.rectangledetector.dto.DetectionResult
 import jp.co.smartbank.rectangledetector.dto.Rectangle
+import jp.co.smartbank.rectangledetector.extension.scaled
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 import org.opencv.android.Utils
 import org.opencv.core.CvType
@@ -21,13 +23,8 @@ internal class RectangleDetectorImpl : RectangleDetector {
 
     override fun detectRectangles(bitmap: Bitmap): DetectionResult {
         // Use a scaled Bitmap image to reduce execution speed.
-        val scaleRatio = MAX_PROCESSING_IMAGE_SIZE.toFloat() / max(bitmap.width, bitmap.height)
-        val scaledBitmap = Bitmap.createScaledBitmap(
-            bitmap,
-            (bitmap.width * scaleRatio).roundToInt(),
-            (bitmap.height * scaleRatio).roundToInt(),
-            false
-        )
+        val scaleRatio = min(1f, MAX_PROCESSING_IMAGE_SIZE.toFloat() / max(bitmap.width, bitmap.height))
+        val scaledBitmap = bitmap.scaled(scaleRatio, true)
 
         val mat = Mat().also { Utils.bitmapToMat(scaledBitmap, it) }
         val edgeMat = markEdgesWithCannyAlgorithm(mat)
