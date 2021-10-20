@@ -13,7 +13,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class RectangleDetectorImplTest : TestCase() {
-    private val detector = RectangleDetectorImpl()
+    private val detector = RectangleDetectorImpl(DetectionAccuracy.Passive)
     private val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     @Test

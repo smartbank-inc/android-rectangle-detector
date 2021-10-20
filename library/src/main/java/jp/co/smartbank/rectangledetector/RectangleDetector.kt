@@ -10,8 +10,8 @@ interface RectangleDetector {
     fun detectRectangles(bitmap: Bitmap): DetectionResult
 
     companion object {
-        fun getInstance(): RectangleDetector {
-            return RectangleDetectorImpl()
+        fun getInstance(detectionAccuracy: DetectionAccuracy = DetectionAccuracy.Passive): RectangleDetector {
+            return RectangleDetectorImpl(detectionAccuracy)
         }
     }
 }

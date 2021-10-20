@@ -6,7 +6,6 @@ import android.util.Size
 import jp.co.smartbank.rectangledetector.dto.DetectionResult
 import jp.co.smartbank.rectangledetector.dto.Rectangle
 import jp.co.smartbank.rectangledetector.extension.scaled
-import jp.co.smartbank.rectangledetector.strategy.CannyAlgorithmStrategy
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -14,8 +13,8 @@ import org.opencv.android.Utils
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 
-internal class RectangleDetectorImpl : RectangleDetector {
-    private val strategy = CannyAlgorithmStrategy()
+internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : RectangleDetector {
+    private val strategy = detectionAccuracy.buildContourStrategy()
 
     init {
         System.loadLibrary("opencv_java4")
