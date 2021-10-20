@@ -16,7 +16,7 @@ internal class CannyAlgorithmStrategy: ContourDetectionStrategy() {
 
     private fun markEdges(mat: Mat): Mat {
         val result = Mat()
-        Imgproc.blur(mat, mat, org.opencv.core.Size(3.0, 3.0))
+        Imgproc.medianBlur(mat, mat, 3)
         Imgproc.Canny(mat, result, 250.0, 100.0, 3, true)
         return result
     }
