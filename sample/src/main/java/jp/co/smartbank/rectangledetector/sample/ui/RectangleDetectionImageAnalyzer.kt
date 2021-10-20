@@ -1,6 +1,7 @@
 package jp.co.smartbank.rectangledetector.sample.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import jp.co.smartbank.rectangledetector.RectangleDetector
@@ -15,7 +16,12 @@ class RectangleDetectionImageAnalyzer(
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(imageProxy: ImageProxy) {
         val bitmap = imageProxy.toBitmap()
-        listener(detector.detectRectangles(bitmap))
+
+        val startTime = System.currentTimeMillis()
+        val rectangles = detector.detectRectangles(bitmap)
+        Log.d("RectangleDetection", "The detection took ${System.currentTimeMillis() - startTime}ms.")
+
+        listener(rectangles)
         imageProxy.close()
     }
 }
