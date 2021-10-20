@@ -30,8 +30,9 @@ internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : Rec
 
         // Combine Rectangles approximated to other into one.
         val rectangles = contourToRectangles(contours).map { it.scaled(1 / scaleRatio) }
+        val distanceTolerance = max(scaledBitmap.width, scaledBitmap.height) / 50f
         val reducedRectangles = rectangles.fold(emptyList<Rectangle>()) { result, rectangle ->
-            val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, 8f) }
+            val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, distanceTolerance) }
             if (approximatedRectangle != null) {
                 result - approximatedRectangle + rectangle.average(approximatedRectangle)
             } else {
