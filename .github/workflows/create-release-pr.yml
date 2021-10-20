@@ -1,0 +1,19 @@
+name: Create Release Pull Request
+on: workflow_dispatch
+jobs:
+  job:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1.1.2
+        with:
+          ruby-version: 2.7.x
+      - name: Create a release pull request
+        env:
+          GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gem install -N git-pr-release
+          git-pr-release
