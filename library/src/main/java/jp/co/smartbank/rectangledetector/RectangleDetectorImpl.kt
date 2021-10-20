@@ -28,8 +28,15 @@ internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : Rec
         val mat = Mat().also { Utils.bitmapToMat(scaledBitmap, it) }
         val contours = strategy.detectContours(mat)
 
+        // Filter out heavily distorted rectangles.
+        val rectangles = contourToRectangles(contours)
+            .filter {
+                it.horizontalDistortionRatio < MAX_RECTANGLE_DISTORTION_RATIO
+                        && it.verticalDistortionRatio < MAX_RECTANGLE_DISTORTION_RATIO
+            }
+            .map { it.scaled(1 / scaleRatio) }
+
         // Combine Rectangles approximated to other into one.
-        val rectangles = contourToRectangles(contours).map { it.scaled(1 / scaleRatio) }
         val distanceTolerance = max(scaledBitmap.width, scaledBitmap.height) / 50f
         val reducedRectangles = rectangles.fold(emptyList<Rectangle>()) { result, rectangle ->
             val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, distanceTolerance) }
@@ -55,5 +62,6 @@ internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : Rec
 
     companion object {
         private const val MAX_PROCESSING_IMAGE_SIZE = 480
+        private const val MAX_RECTANGLE_DISTORTION_RATIO = 1.5f
     }
 }

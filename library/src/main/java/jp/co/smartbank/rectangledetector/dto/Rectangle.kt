@@ -11,6 +11,29 @@ data class Rectangle(
     val bottomLeft: Point,
     val bottomRight: Point
 ) {
+    private val topWidth: Float
+        get() = topLeft.distance(topRight)
+    private val bottomWidth: Float
+        get() = bottomLeft.distance(bottomRight)
+    private val leftHeight: Float
+        get() = topLeft.distance(bottomLeft)
+    private val rightHeight: Float
+        get() = topRight.distance(bottomRight)
+
+    internal val horizontalDistortionRatio: Float
+        get() = if (leftHeight > rightHeight) {
+            leftHeight / rightHeight
+        } else {
+            rightHeight / leftHeight
+        }
+
+    internal val verticalDistortionRatio: Float
+        get() = if (topWidth > bottomWidth) {
+            topWidth / bottomWidth
+        } else {
+            bottomWidth / topWidth
+        }
+
     internal fun scaled(ratio: Float) = Rectangle(
         topLeft = Point(
             (topLeft.x * ratio).roundToInt(),
