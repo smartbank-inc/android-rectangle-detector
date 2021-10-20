@@ -10,13 +10,12 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import org.opencv.android.Utils
-import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
-import org.opencv.core.MatOfPoint2f
-import org.opencv.imgproc.Imgproc
 
-internal class RectangleDetectorImpl : RectangleDetector {
+internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : RectangleDetector {
+    private val strategy = detectionAccuracy.buildContourStrategy()
+
     init {
         System.loadLibrary("opencv_java4")
     }
@@ -27,14 +26,13 @@ internal class RectangleDetectorImpl : RectangleDetector {
         val scaledBitmap = bitmap.scaled(scaleRatio, true)
 
         val mat = Mat().also { Utils.bitmapToMat(scaledBitmap, it) }
-        val edgeMat = markEdgesWithCannyAlgorithm(mat)
-        val edgeClosedMat = closeEdges(edgeMat)
-        val contours = detectContours(edgeClosedMat)
+        val contours = strategy.detectContours(mat)
 
         // Combine Rectangles approximated to other into one.
         val rectangles = contourToRectangles(contours).map { it.scaled(1 / scaleRatio) }
+        val distanceTolerance = max(scaledBitmap.width, scaledBitmap.height) / 50f
         val reducedRectangles = rectangles.fold(emptyList<Rectangle>()) { result, rectangle ->
-            val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, 8f) }
+            val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, distanceTolerance) }
             if (approximatedRectangle != null) {
                 result - approximatedRectangle + rectangle.average(approximatedRectangle)
             } else {
@@ -46,54 +44,6 @@ internal class RectangleDetectorImpl : RectangleDetector {
             imageSize = Size(bitmap.width, bitmap.height),
             rectangles = reducedRectangles
         )
-    }
-
-    private fun markEdgesWithCannyAlgorithm(mat: Mat): Mat {
-        val result = Mat()
-        Imgproc.blur(mat, result, org.opencv.core.Size(5.0, 5.0))
-        Imgproc.Canny(mat, result, 250.0, 100.0, 3, true)
-        return result
-    }
-
-    private fun closeEdges(mat: Mat): Mat {
-        val result = Mat()
-        Imgproc.morphologyEx(
-            mat, result, Imgproc.MORPH_CLOSE,
-            Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, org.opencv.core.Size(5.0, 5.0))
-        )
-        return result
-    }
-
-    private fun detectContours(mat: Mat): List<MatOfPoint> {
-        val contours = arrayListOf<MatOfPoint>()
-        val hierarchy = Mat.zeros(org.opencv.core.Size(5.0, 5.0), CvType.CV_8UC1)
-        Imgproc.findContours(
-            mat,
-            contours,
-            hierarchy,
-            Imgproc.RETR_LIST,
-            Imgproc.CHAIN_APPROX_NONE
-        )
-
-        return contours.mapNotNull {
-            // Ignore extremely small size rectangles.
-            if (Imgproc.contourArea(it) < mat.size().area() / 100) {
-                return@mapNotNull null
-            }
-
-            val pointMat = MatOfPoint2f(*it.toArray())
-            val approx = MatOfPoint2f()
-            val approx2 = MatOfPoint()
-
-            val arcLength = Imgproc.arcLength(pointMat, true)
-            Imgproc.approxPolyDP(pointMat, approx, 0.03 * arcLength, true)
-            approx.convertTo(approx2, CvType.CV_32S)
-            if (approx2.size().area() == 4.0) {
-                approx2
-            } else {
-                null
-            }
-        }
     }
 
     private fun contourToRectangles(contour: List<MatOfPoint>): List<Rectangle> = contour.map {
