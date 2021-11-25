@@ -40,12 +40,14 @@ internal class RectangleDetectorImpl(detectionAccuracy: DetectionAccuracy) : Rec
         val rectangles = contourToRectangles(contours)
             .filter { it.isValidForDetection(bitmap.width, bitmap.height) }
 
-        // Combine Rectangles approximated to other into one.
+        // Filter out Rectangles approximated to other.
         val distanceTolerance = max(bitmap.width, bitmap.height) * 0.02f
         return rectangles.fold(emptyList()) { result, rectangle ->
             val approximatedRectangle = result.firstOrNull { it.isApproximated(rectangle, distanceTolerance) }
             if (approximatedRectangle != null) {
-                result - approximatedRectangle + rectangle.average(approximatedRectangle)
+                val largerRectangle = listOf(rectangle, approximatedRectangle)
+                    .maxByOrNull { it.circumferenceLength } ?: approximatedRectangle
+                result - approximatedRectangle + largerRectangle
             } else {
                 result + rectangle
             }

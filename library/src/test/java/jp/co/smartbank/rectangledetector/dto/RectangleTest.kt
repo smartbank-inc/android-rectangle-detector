@@ -64,27 +64,6 @@ class RectangleTest {
     }
 
     @Test
-    fun testAverage() {
-        val rectangle = Rectangle(
-            topLeft = Point(100, 200),
-            topRight = Point(500, 200),
-            bottomLeft = Point(100, 500),
-            bottomRight = Point(500, 500),
-        )
-        val rectangle2 = Rectangle(
-            topLeft = Point(150, 250),
-            topRight = Point(550, 250),
-            bottomLeft = Point(150, 550),
-            bottomRight = Point(550, 550),
-        )
-        val averageRectangle = rectangle.average(rectangle2)
-        assertEquals(Point(125, 225), averageRectangle.topLeft)
-        assertEquals(Point(525, 225), averageRectangle.topRight)
-        assertEquals(Point(125, 525), averageRectangle.bottomLeft)
-        assertEquals(Point(525, 525), averageRectangle.bottomRight)
-    }
-
-    @Test
     fun testIsApproximated() {
         val rectangle = Rectangle(
             topLeft = Point(100, 200),
