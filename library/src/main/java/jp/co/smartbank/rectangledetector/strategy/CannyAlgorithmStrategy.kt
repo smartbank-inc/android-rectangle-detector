@@ -44,8 +44,8 @@ internal class CannyAlgorithmStrategy(private val level: Level) : ContourDetecti
          */
         Normal(
             preBlurSize = 1,
-            cannyThreshold1 = 250.0,
-            cannyThreshold2 = 100.0,
+            cannyThreshold1 = 100.0,
+            cannyThreshold2 = 250.0,
             closingSize = 8.0
         ),
 

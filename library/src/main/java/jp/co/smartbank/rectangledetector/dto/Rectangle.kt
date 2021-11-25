@@ -20,6 +20,9 @@ data class Rectangle(
     private val rightHeight: Float
         get() = topRight.distance(bottomRight)
 
+    internal val points: List<Point>
+        get() = listOf(topLeft, topRight, bottomRight, bottomLeft)
+
     internal val horizontalDistortionRatio: Float
         get() = if (leftHeight > rightHeight) {
             leftHeight / rightHeight
@@ -33,6 +36,9 @@ data class Rectangle(
         } else {
             bottomWidth / topWidth
         }
+
+    internal val circumferenceLength: Float
+        get() = topWidth + bottomWidth + leftHeight + rightHeight
 
     internal fun scaled(ratio: Float) = Rectangle(
         topLeft = Point(
@@ -50,25 +56,6 @@ data class Rectangle(
         bottomRight = Point(
             (bottomRight.x * ratio).roundToInt(),
             (bottomRight.y * ratio).roundToInt()
-        )
-    )
-
-    internal fun average(other: Rectangle) = Rectangle(
-        topLeft = Point(
-            (topLeft.x + other.topLeft.x) / 2,
-            (topLeft.y + other.topLeft.y) / 2
-        ),
-        topRight = Point(
-            (topRight.x + other.topRight.x) / 2,
-            (topRight.y + other.topRight.y) / 2
-        ),
-        bottomLeft = Point(
-            (bottomLeft.x + other.bottomLeft.x) / 2,
-            (bottomLeft.y + other.bottomLeft.y) / 2
-        ),
-        bottomRight = Point(
-            (bottomRight.x + other.bottomRight.x) / 2,
-            (bottomRight.y + other.bottomRight.y) / 2
         )
     )
 
