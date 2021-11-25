@@ -20,6 +20,9 @@ data class Rectangle(
     private val rightHeight: Float
         get() = topRight.distance(bottomRight)
 
+    internal val points: List<Point>
+        get() = listOf(topLeft, topRight, bottomRight, bottomLeft)
+
     internal val horizontalDistortionRatio: Float
         get() = if (leftHeight > rightHeight) {
             leftHeight / rightHeight
