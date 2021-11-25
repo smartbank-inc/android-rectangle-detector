@@ -37,6 +37,9 @@ data class Rectangle(
             bottomWidth / topWidth
         }
 
+    internal val circumferenceLength: Float
+        get() = topWidth + bottomWidth + leftHeight + rightHeight
+
     internal fun scaled(ratio: Float) = Rectangle(
         topLeft = Point(
             (topLeft.x * ratio).roundToInt(),
@@ -53,25 +56,6 @@ data class Rectangle(
         bottomRight = Point(
             (bottomRight.x * ratio).roundToInt(),
             (bottomRight.y * ratio).roundToInt()
-        )
-    )
-
-    internal fun average(other: Rectangle) = Rectangle(
-        topLeft = Point(
-            (topLeft.x + other.topLeft.x) / 2,
-            (topLeft.y + other.topLeft.y) / 2
-        ),
-        topRight = Point(
-            (topRight.x + other.topRight.x) / 2,
-            (topRight.y + other.topRight.y) / 2
-        ),
-        bottomLeft = Point(
-            (bottomLeft.x + other.bottomLeft.x) / 2,
-            (bottomLeft.y + other.bottomLeft.y) / 2
-        ),
-        bottomRight = Point(
-            (bottomRight.x + other.bottomRight.x) / 2,
-            (bottomRight.y + other.bottomRight.y) / 2
         )
     )
 
