@@ -27,6 +27,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
@@ -38,7 +39,7 @@ android {
 }
 
 dependencies {
-    api project(':opencv')
+    implementation 'org.opencv:opencv:4.12.0'
     testImplementation 'androidx.test:core:1.4.0'
     testImplementation 'androidx.test:runner:1.4.0'
     testImplementation 'androidx.test:rules:1.4.0'

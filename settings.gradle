@@ -9,4 +9,3 @@ dependencyResolutionManagement {
 rootProject.name = "RectangleDetector"
 include ':sample'
 include ':library'
-include ':opencv'
