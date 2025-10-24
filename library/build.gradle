@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    id 'com.kezong.fat-aar'
     id 'kotlin-android'
     id 'maven-publish'
     id 'org.jetbrains.dokka'
@@ -9,6 +8,7 @@ plugins {
 group = 'com.github.smartbank-inc'
 
 android {
+    namespace 'jp.co.smartbank.rectangledetector'
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -27,23 +27,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 }
 
 dependencies {
-    embed project(path: ':opencv', configuration: 'default')
+    implementation 'org.opencv:opencv:4.12.0'
     testImplementation 'androidx.test:core:1.4.0'
     testImplementation 'androidx.test:runner:1.4.0'
     testImplementation 'androidx.test:rules:1.4.0'
     testImplementation 'androidx.test.ext:junit:1.1.3'
     testImplementation "junit:junit:$junit_version"
-    testImplementation 'org.robolectric:robolectric:4.6.1'
+    testImplementation 'org.robolectric:robolectric:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
