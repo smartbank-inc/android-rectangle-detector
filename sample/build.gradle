@@ -1,9 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 android {
+    namespace 'jp.co.smartbank.rectangledetector.sample'
     compileSdk compile_sdk_version
 
     defaultConfig {
@@ -33,7 +35,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-        useIR = true
         freeCompilerArgs += [
                 "-Xopt-in=kotlin.RequiresOptIn",
         ]
@@ -52,6 +53,11 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {
