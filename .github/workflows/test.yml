@@ -5,34 +5,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
       - name: Run Unit Test
-        run: ./gradlew test
+        run: ./gradlew library:test
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: unit_test_reports
           path: library/build/reports/tests/testDebugUnitTest/
+          retention-days: 60
   instrumentation-test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
-      - name: Setup Java 11
-        uses: actions/setup-java@v1
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
-          java-version: 11
+          distribution: 'temurin'
+          java-version: 17
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Run Instrumentation Test
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@1dcd0090116d15e7c562f8db72807de5e036a4ed # v2.34.0
         with:
+          arch: 'x86_64'
           api-level: 29
-          script: ./gradlew connectedCheck
+          script: ./gradlew library:connectedCheck
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: instrumentation_test_reports
           path: library/build/reports/androidTests/connected/
+          retention-days: 60
