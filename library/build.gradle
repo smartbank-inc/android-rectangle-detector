@@ -2,7 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'maven-publish'
-    id 'org.jetbrains.dokka'
+    id 'org.jetbrains.dokka-javadoc'
 }
 
 group = 'com.github.smartbank-inc'
@@ -36,6 +36,36 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+dokka {
+    dokkaPublications.javadoc {
+        outputDirectory.set(layout.buildDirectory.dir("dokka/javadoc"))
+    }
+
+    dokkaSourceSets.configureEach {
+        documentedVisibilities.set([
+            org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier.Public,
+            org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier.Protected
+        ])
+
+        suppressInheritedMembers.set(false)
+
+        jdkVersion.set(11)
+
+        sourceLink {
+            localDirectory.set(file("src/main/java"))
+            remoteUrl("https://github.com/smartbank-inc/android-rectangle-detector/tree/main/library/src/main/java")
+            remoteLineSuffix.set("#L")
+        }
+    }
 }
 
 dependencies {
@@ -51,18 +81,6 @@ dependencies {
 }
 
 afterEvaluate {
-    task androidSourcesJar(type: Jar) {
-        archiveClassifier.convention('sources')
-        archiveClassifier.set('sources')
-        from android.sourceSets.main.java.source
-    }
-
-    task androidJavadocsJar(type: Jar, dependsOn: dokkaJavadoc) {
-        archiveClassifier.convention('javadoc')
-        archiveClassifier.set('javadoc')
-        from dokkaJavadoc.outputDirectory
-    }
-
     publishing {
         publications {
             release(MavenPublication) {
@@ -70,9 +88,14 @@ afterEvaluate {
                 groupId = 'com.github.smartbank-inc'
                 artifactId = 'android-rectangle-detector'
                 version = version_name
-                artifact androidSourcesJar
-                artifact androidJavadocsJar
             }
+        }
+    }
+
+    tasks.withType(Jar).configureEach {
+        if (name == 'releaseJavadocJar') {
+            dependsOn(dokkaGenerate)
+            from(layout.buildDirectory.dir("dokka/javadoc"))
         }
     }
 }
